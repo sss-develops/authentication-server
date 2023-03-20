@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 @Embeddable
 public class LoginId {
 
-    private static final Pattern pattern = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}");
+    private static final Pattern pattern = Pattern.compile("^[0-9a-zA-Z]{8,}");
 
     private String loginId;
 
@@ -22,6 +22,10 @@ public class LoginId {
     public LoginId(String loginId) {
         validateLoginId(loginId);
         this.loginId = loginId;
+    }
+
+    public static LoginId from(String loginId) {
+        return new LoginId(loginId);
     }
 
     private void validateLoginId(String loginId) {
