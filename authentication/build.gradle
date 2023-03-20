@@ -1,0 +1,184 @@
+buildscript {
+    ext {
+        queryDslVersion = "5.0.0"
+    }
+}
+
+plugins {
+    id 'org.springframework.boot' version '2.7.8'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
+    id 'jacoco'
+    id 'java'
+}
+
+group = 'project.goorm'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+repositories {
+    mavenCentral()
+}
+
+//--------------------------------------------------------------------------
+
+// jacoco
+jacoco {
+    toolVersion = '0.8.7'
+}
+
+jacocoTestReport {
+    reports {
+        html.enabled true
+        xml.enabled true
+        csv.enabled false
+        html.destination file("$buildDir/jacocoHtml")
+        xml.destination file("$buildDir/jacoco.xml")
+    }
+
+    def Qdomains = []
+
+    for (qPattern in '**/QA'..'**/QZ') {
+        Qdomains.add(qPattern + '*')
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(
+                files(classDirectories.files.collect {
+                    fileTree(dir: it, excludes: [
+                            "**/*Application*",
+                            "**/*Config*",
+                            "**/*Configuration*",
+                            "**/*Dto*",
+                            "**/*Error*",
+                            "**/*Request*",
+                            "**/*Response*",
+                            "**/*DataSource*",
+                            "**/*Utils*",
+                            "**/*Exception*"
+                    ] + Qdomains)
+                })
+        )
+    }
+    finalizedBy 'jacocoTestCoverageVerification'
+}
+
+jacocoTestCoverageVerification {
+
+    def Qdomains = []
+
+    for (qPattern in '*.QA'..'*.QZ') {
+        Qdomains.add(qPattern + '*')
+    }
+
+    violationRules {
+        rule {
+            enabled = true
+            element = 'CLASS'
+
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.8
+            }
+            excludes = [
+                    "**/*Application*",
+                    "**/*Config*",
+                    "**/*Configuration*",
+                    "**/*Dto*",
+                    "**/*Error*",
+                    "**/*Request*",
+                    "**/*Response*",
+                    "**/*DataSource*",
+                    "**/*Utils*",
+                    "**/*Exception*"
+            ] + Qdomains
+        }
+    }
+}
+
+//--------------------------------------------------------------------------
+
+dependencies {
+    // SpringBoot
+    implementation('org.springframework.boot:spring-boot-starter')
+    implementation('org.springframework.boot:spring-boot-starter-web:2.7.8')
+    implementation('org.springframework.boot:spring-boot-starter-security')
+    implementation(group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.7.8')
+    implementation(group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: '2.7.8')
+
+    // JPA, QueryDSL
+    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+    implementation("com.querydsl:querydsl-jpa:${queryDslVersion}")
+    implementation("com.querydsl:querydsl-apt:${queryDslVersion}")
+    implementation("com.querydsl:querydsl-core:${queryDslVersion}")
+
+    // UUID
+    implementation('com.fasterxml.uuid:java-uuid-generator:4.1.0')
+
+    // MySQL
+    implementation(group: 'mysql', name: 'mysql-connector-java', version: '8.0.28')
+    runtimeOnly('mysql:mysql-connector-java')
+
+    // Redis
+    implementation('org.springframework.boot:spring-boot-starter-data-redis')
+    implementation(group: 'it.ozimov', name: 'embedded-redis', version: '0.7.1')
+    implementation('org.redisson:redisson-spring-boot-starter:3.16.8')
+
+    // Lombok
+    compileOnly('org.projectlombok:lombok:1.18.22')
+    testCompileOnly('org.projectlombok:lombok:1.18.12')
+    testAnnotationProcessor('org.projectlombok:lombok:1.18.24')
+    annotationProcessor('org.projectlombok:lombok')
+    annotationProcessor('org.springframework.boot:spring-boot-configuration-processor')
+}
+
+//--------------------------------------------------------------------------
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+task testCoverage(type: Test) {
+    group('verification')
+    description('Runs the unit tests with coverage')
+
+    dependsOn(':test',
+            ':jacocoTestReport',
+            ':jacocoTestCoverageVerification')
+
+    tasks['jacocoTestReport'].mustRunAfter(tasks['test'])
+    tasks['jacocoTestCoverageVerification'].mustRunAfter(tasks['jacocoTestReport'])
+}
+
+//--------------------------------------------------------------------------
+
+jar {
+    enabled = false
+}
+
+//--------------------------------------------------------------------------
+
+// QueryDSL
+def querydslDir = "$buildDir/generated/querydsl"
+
+querydsl {
+    jpa = true
+    querydslSourcesDir = querydslDir
+}
+
+sourceSets {
+    main.java.srcDir querydslDir
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    querydsl.extendsFrom compileClasspath
+    asciidoctorExtensions
+}
+
+compileQuerydsl {
+    options.annotationProcessorPath = configurations.querydsl
+}
