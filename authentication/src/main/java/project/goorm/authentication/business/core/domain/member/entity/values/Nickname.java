@@ -36,6 +36,10 @@ public class Nickname {
         }
     }
 
+    public static Nickname from(String nickname) {
+        return new Nickname(nickname);
+    }
+
     public String getNickname() {
         return nickname;
     }

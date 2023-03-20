@@ -1,4 +1,4 @@
-package study.project.codeexample.common.jpa;
+package project.goorm.authentication.common.configuration.jpa;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.context.annotation.Bean;

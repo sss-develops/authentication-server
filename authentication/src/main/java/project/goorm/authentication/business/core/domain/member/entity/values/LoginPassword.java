@@ -28,6 +28,15 @@ public class LoginPassword {
         this.loginPassword = loginPassword;
     }
 
+    public LoginPassword(boolean encoded, String loginPassword) {
+        if (encoded) {
+            this.loginPassword = loginPassword;
+            return;
+        }
+        validatePassword(loginPassword);
+        this.loginPassword = loginPassword;
+    }
+
     private void validatePassword(String loginPassword) {
         if (loginPassword == null) {
             throw new IllegalArgumentException("패스워드를 입력해주세요.", ErrorField.of("LoginPassword", loginPassword));
@@ -38,6 +47,14 @@ public class LoginPassword {
         if (!pattern.matcher(loginPassword).matches()) {
             throw new IllegalArgumentException("올바른 비밀번호를 입력해주세요.", ErrorField.of("LoginPassword", loginPassword));
         }
+    }
+
+    public static LoginPassword from(String password) {
+        return new LoginPassword(password);
+    }
+
+    public static LoginPassword encode(Boolean encoded, String password) {
+        return new LoginPassword(encoded, password);
     }
 
     public String getLoginPassword() {

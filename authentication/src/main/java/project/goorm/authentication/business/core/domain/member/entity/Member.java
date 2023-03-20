@@ -16,6 +16,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.time.Instant;
 import java.util.Objects;
 
 @Entity
@@ -60,16 +61,67 @@ public class Member {
     public Member(
             LoginId loginId,
             LoginPassword loginPassword,
-            Nickname nickname,
-            LastLoginIpAddress lastLoginIpAddress
+            Nickname nickname
     ) {
         this.loginId = loginId;
         this.loginPassword = loginPassword;
         this.nickname = nickname;
-        this.lastLoginIpAddress = lastLoginIpAddress;
+        this.lastLoginIpAddress = new LastLoginIpAddress("");
         this.createdAt = CreatedAt.initCreatedAt();
         this.lastModifiedAt = LastModifiedAt.initLastModifiedAt();
         this.deleted = Deleted.FALSE;
+    }
+
+    public LoginId getLoginIdAsValue() {
+        return loginId;
+    }
+
+    public String getLoginId() {
+        return loginId.getLoginId();
+    }
+
+    public LoginPassword getLoginPasswordAsValue() {
+        return loginPassword;
+    }
+
+    public String getLoginPassword() {
+        return loginPassword.getLoginPassword();
+    }
+
+    public Nickname getNicknameAsValue() {
+        return nickname;
+    }
+
+    public String getNickname() {
+        return nickname.getNickname();
+    }
+
+    public CreatedAt getCreatedAtAsValue() {
+        return createdAt;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt.getCreatedAt();
+    }
+
+    public LastModifiedAt getLastModifiedAtAsValue() {
+        return lastModifiedAt;
+    }
+
+    public Instant getLastModifiedAt() {
+        return lastModifiedAt == null ? null : lastModifiedAt.getLastModifiedAt();
+    }
+
+    public LastLoginIpAddress getLastLoginIpAddressAsValue() {
+        return lastLoginIpAddress;
+    }
+
+    public String getLastLoginIpAddress() {
+        return lastLoginIpAddress.getLastLoginIpAddress();
+    }
+
+    public Deleted getDeleted() {
+        return deleted;
     }
 
     @Override
