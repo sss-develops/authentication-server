@@ -125,6 +125,14 @@ dependencies {
     implementation(group: 'it.ozimov', name: 'embedded-redis', version: '0.7.1')
     implementation('org.redisson:redisson-spring-boot-starter:3.16.8')
 
+    // MongoDB
+    implementation('org.springframework.boot:spring-boot-starter-data-mongodb')
+
+    // Test
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation('org.springframework.restdocs:spring-restdocs-mockmvc')
+    testImplementation('org.springframework.restdocs:spring-restdocs-restassured')
+
     // Lombok
     compileOnly('org.projectlombok:lombok:1.18.22')
     testCompileOnly('org.projectlombok:lombok:1.18.12')
