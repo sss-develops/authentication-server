@@ -20,4 +20,16 @@ public class CookieUtils {
                 .build()
                 .toString();
     }
+
+    public String createExpiredCookie() {
+        return ResponseCookie.from(SESSION_ID, "")
+                .path("/")
+                .domain("SSS")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Lax")
+                .maxAge(0)
+                .build()
+                .toString();
+    }
 }

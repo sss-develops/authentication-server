@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import project.goorm.authentication.business.core.domain.member.entity.AuthenticatedMember;
 import project.goorm.authentication.business.web.member.application.LogoutCommand;
 import project.goorm.authentication.common.annotation.business.LoginMember;
 import project.goorm.authentication.common.annotation.business.LoginOnly;
