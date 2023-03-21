@@ -11,4 +11,8 @@ public interface RedisSessionService {
 
     Long getLoginTryCount(Long memberId);
 
+    void deleteSession(Long memberId, String session);
+
+    void deleteAllSessions(Long memberId);
+
 }
