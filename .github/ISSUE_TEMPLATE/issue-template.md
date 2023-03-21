@@ -1,16 +1,7 @@
----
-name: Issue Template
-about: 이슈 템플릿
-title: ''
-labels: ''
-assignees: ''
-
----
-
 ## :pushpin: 상세 내용
 
-&nbsp;&nbsp; - 목록1
-&nbsp;&nbsp; - 목록2
+&nbsp;&nbsp; - 목록1 <br/>
+&nbsp;&nbsp; - 목록2 <br/>
 
 <br/><br/><br/>
 
