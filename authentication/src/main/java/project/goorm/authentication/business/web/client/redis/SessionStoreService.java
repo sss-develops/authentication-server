@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import project.goorm.authentication.common.exception.common.SSSTeamException;
 
 import javax.annotation.Resource;
+import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,16 +29,16 @@ public class SessionStoreService implements RedisSessionService {
     private final StringRedisTemplate stringRedisTemplate;
 
     @Resource(name = "loginCountRedisTemplate")
-    private final RedisTemplate<String, Long> longRedisTemplate;
+    private final RedisTemplate<String, Long> loginCountRedisTemplate;
 
     public SessionStoreService(
             RedisTemplate<String, Object> redisTemplate,
             StringRedisTemplate stringRedisTemplate,
-            RedisTemplate<String, Long> longRedisTemplate
+            RedisTemplate<String, Long> loginCountRedisTemplate
     ) {
         this.redisTemplate = redisTemplate;
         this.stringRedisTemplate = stringRedisTemplate;
-        this.longRedisTemplate = longRedisTemplate;
+        this.loginCountRedisTemplate = loginCountRedisTemplate;
     }
 
     @Override
@@ -81,7 +82,13 @@ public class SessionStoreService implements RedisSessionService {
     @Override
     public Long getLoginTryCount(Long memberId) {
         try {
-            return longRedisTemplate.opsForValue().increment(getLoginCountKey(memberId));
+            Long loginTryCount = loginCountRedisTemplate.opsForValue().increment(getLoginCountKey(memberId));
+            if (loginTryCount == null) {
+                loginCountRedisTemplate.opsForValue().set(getLoginCountKey(memberId), 1L, Duration.ofMinutes(30));
+                return 1L;
+            }
+            loginCountRedisTemplate.opsForValue().set(getLoginCountKey(memberId), loginTryCount, Duration.ofMinutes(30));
+            return loginTryCount;
         } catch (DataAccessException e) {
             throw SSSTeamException.of(REDIS_CONNECTION_FAILURE_EXCEPTION);
         }

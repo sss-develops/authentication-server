@@ -60,4 +60,14 @@ class SessionFilterTest extends IntegrationTestBase {
 
         assertEquals(200, response.getStatus());
     }
+
+    @Test
+    @DisplayName("최대 로그인 시도 횟수를 넘은 사용자가 로그인을 시도하면 403 상태코드를 받는다.")
+    void when_max_login_count_exceed_member_try_login_then_statuscode_should_be_403() throws ServletException, IOException {
+        request.setCookies(new Cookie("INVALID_SESSION_ID", UUID.randomUUID().toString()));
+
+        filter.doFilter(request, response, chain);
+
+        assertEquals(FORBIDDEN.value(), response.getStatus());
+    }
 }

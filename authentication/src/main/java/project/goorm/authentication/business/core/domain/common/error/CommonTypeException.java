@@ -6,6 +6,7 @@ import project.goorm.authentication.common.exception.common.BaseExceptionType;
 public enum CommonTypeException implements BaseExceptionType {
 
     NUMBER_FORMAT_EXCEPTION(400, "회원 아이디가 올바르지 않습니다.", HttpStatus.BAD_REQUEST),
+    LOGIN_FORBIDDEN_EXCEPTION(403, "일정 기간 내 로그인 시도 횟수를 초과했습니다.", HttpStatus.FORBIDDEN),
     REDIS_WRONG_TYPE_DATASTRUCTURE_EXCEPTION(502, "올바르지 않은 키를 입력했습니다.", HttpStatus.BAD_GATEWAY),
     REDIS_CONNECTION_FAILURE_EXCEPTION(502, "서버에 문제가 발생했습니다.", HttpStatus.BAD_GATEWAY);
 
