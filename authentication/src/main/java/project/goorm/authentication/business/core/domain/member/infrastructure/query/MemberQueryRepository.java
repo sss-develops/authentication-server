@@ -4,8 +4,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
 import project.goorm.authentication.business.core.domain.common.deleted.Deleted;
 import project.goorm.authentication.business.core.domain.member.entity.Member;
+import project.goorm.authentication.business.core.domain.member.entity.values.LoginId;
 import project.goorm.authentication.business.core.domain.member.entity.values.Nickname;
-import project.goorm.authentication.business.web.member.presentation.response.DuplicatedNicknameCheckResponse;
 
 import java.util.Optional;
 
@@ -20,22 +20,22 @@ public class MemberQueryRepository {
         this.queryFactory = queryFactory;
     }
 
-    public DuplicatedNicknameCheckResponse validateDuplicatedNickname(Nickname nickname) {
-        Integer value = queryFactory.selectOne()
-                .from(member)
-                .where(
-                        member.nickname.eq(nickname)
-                                .and(member.deleted.eq(Deleted.FALSE))
-                )
-                .fetchFirst();
-        return new DuplicatedNicknameCheckResponse(value);
-    }
-
     public Optional<Member> findMemberByNickname(Nickname nickname) {
         return Optional.ofNullable(
                 queryFactory.selectFrom(member)
                         .where(
                                 member.nickname.eq(nickname)
+                                        .and(member.deleted.eq(Deleted.FALSE))
+                        )
+                        .fetchOne()
+        );
+    }
+
+    public Optional<Member> findByLoginId(LoginId loginId) {
+        return Optional.ofNullable(
+                queryFactory.selectFrom(member)
+                        .where(
+                                member.loginId.eq(loginId)
                                         .and(member.deleted.eq(Deleted.FALSE))
                         )
                         .fetchOne()
