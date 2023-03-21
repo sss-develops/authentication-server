@@ -1,11 +1,15 @@
 package project.goorm.authentication.common.exception;
 
 import org.springframework.boot.actuate.endpoint.invoke.MissingParametersException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import project.goorm.authentication.common.exception.common.ErrorResponse;
+import project.goorm.authentication.common.exception.common.LoginForbiddenException;
 import project.goorm.authentication.common.exception.common.SSSTeamException;
 
+import static org.springframework.http.HttpHeaders.SET_COOKIE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static project.goorm.authentication.business.web.member.presentation.CookieUtils.createInvalidSessionCookie;
 
 @RestControllerAdvice
 public class ExceptionHandler {
@@ -25,4 +29,10 @@ public class ExceptionHandler {
         return ErrorResponse.of(exception);
     }
 
+    @org.springframework.web.bind.annotation.ExceptionHandler(LoginForbiddenException.class)
+    public ResponseEntity<ErrorResponse> catchLoginForbiddenException(LoginForbiddenException exception) {
+        return ResponseEntity.status(403)
+                .header(SET_COOKIE, createInvalidSessionCookie())
+                .body(ErrorResponse.of(exception));
+    }
 }

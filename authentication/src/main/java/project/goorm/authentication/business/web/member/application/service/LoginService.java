@@ -9,9 +9,10 @@ import project.goorm.authentication.business.core.domain.member.entity.values.Lo
 import project.goorm.authentication.business.core.domain.member.infrastructure.query.MemberQueryRepository;
 import project.goorm.authentication.business.web.client.redis.RedisSessionService;
 import project.goorm.authentication.business.web.member.application.LoginCommand;
+import project.goorm.authentication.common.exception.common.LoginForbiddenException;
 import project.goorm.authentication.common.exception.common.SSSTeamException;
 
-import static project.goorm.authentication.business.core.domain.member.MemberTypeException.FORBIDDEN_ACCESS;
+import static project.goorm.authentication.business.core.domain.common.error.CommonTypeException.LOGIN_FORBIDDEN_EXCEPTION;
 import static project.goorm.authentication.business.core.domain.member.MemberTypeException.INVALID_LOGIN_ID_EXCEPTION;
 import static project.goorm.authentication.business.core.domain.member.MemberTypeException.INVALID_PASSWORD_EXCEPTION;
 
@@ -45,7 +46,7 @@ public class LoginService implements LoginCommand {
         if (!passwordEncoder.matches(loginPassword.getLoginPassword(), member.getLoginPassword())) {
             Long failureCount = sessionCommand.getLoginTryCount(member.getMemberId());
             if (failureCount > 5) {
-                throw SSSTeamException.of(FORBIDDEN_ACCESS);
+                throw LoginForbiddenException.of(LOGIN_FORBIDDEN_EXCEPTION);
             }
             throw SSSTeamException.of(INVALID_PASSWORD_EXCEPTION);
         }

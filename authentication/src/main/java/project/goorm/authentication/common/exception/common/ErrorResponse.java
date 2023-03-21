@@ -18,6 +18,13 @@ public class ErrorResponse {
         this.status = exception.getStatus();
     }
 
+    private ErrorResponse(LoginForbiddenException exception) {
+        this.eventTime = LocalDateTime.now();
+        this.code = exception.getCode();
+        this.message = exception.getMessage();
+        this.status = exception.getStatus();
+    }
+
     private ErrorResponse(
             HttpStatus status,
             String message
@@ -29,6 +36,10 @@ public class ErrorResponse {
     }
 
     public static ErrorResponse of(SSSTeamException exception) {
+        return new ErrorResponse(exception);
+    }
+
+    public static ErrorResponse of(LoginForbiddenException exception) {
         return new ErrorResponse(exception);
     }
 
