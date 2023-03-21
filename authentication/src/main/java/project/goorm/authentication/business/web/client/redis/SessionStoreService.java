@@ -15,7 +15,6 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.UUID;
 
-import static project.goorm.authentication.business.core.domain.common.error.CommonTypeException.NUMBER_FORMAT_EXCEPTION;
 import static project.goorm.authentication.business.core.domain.common.error.CommonTypeException.REDIS_CONNECTION_FAILURE_EXCEPTION;
 import static project.goorm.authentication.business.core.domain.common.error.CommonTypeException.REDIS_WRONG_TYPE_DATASTRUCTURE_EXCEPTION;
 
@@ -74,12 +73,8 @@ public class SessionStoreService implements RedisSessionService {
                 return Long.parseLong(memberId);
             }
             return null;
-        } catch (NumberFormatException e) {
-            throw SSSTeamException.of(NUMBER_FORMAT_EXCEPTION);
         } catch (RedisSystemException e) {
             throw SSSTeamException.of(REDIS_WRONG_TYPE_DATASTRUCTURE_EXCEPTION);
-        } catch (Exception e) {
-            throw SSSTeamException.of(REDIS_CONNECTION_FAILURE_EXCEPTION);
         }
     }
 
@@ -87,7 +82,52 @@ public class SessionStoreService implements RedisSessionService {
     public Long getLoginTryCount(Long memberId) {
         try {
             return longRedisTemplate.opsForValue().increment(getLoginCountKey(memberId));
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
+            throw SSSTeamException.of(REDIS_CONNECTION_FAILURE_EXCEPTION);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteSession(Long memberId, String session) {
+        try {
+            stringRedisTemplate.execute(new SessionCallback<List<Object>>() {
+                public List<Object> execute(@NonNull RedisOperations operations) throws DataAccessException {
+                    operations.multi();
+
+                    stringRedisTemplate.delete(session);
+                    redisTemplate.opsForSet().remove(getSessionsKey(memberId), session);
+
+                    @SuppressWarnings("unchecked")
+                    List<Object> transactionCommit = operations.exec();
+                    return transactionCommit;
+                }
+            });
+        } catch (RedisSystemException e) {
+            throw SSSTeamException.of(REDIS_WRONG_TYPE_DATASTRUCTURE_EXCEPTION);
+        } catch (DataAccessException e) {
+            throw SSSTeamException.of(REDIS_CONNECTION_FAILURE_EXCEPTION);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllSessions(Long memberId) {
+        try {
+            stringRedisTemplate.execute(new SessionCallback<List<Object>>() {
+                public List<Object> execute(@NonNull RedisOperations operations) throws DataAccessException {
+                    operations.multi();
+
+                    redisTemplate.delete(getSessionsKey(memberId));
+
+                    @SuppressWarnings("unchecked")
+                    List<Object> transactionCommit = operations.exec();
+                    return transactionCommit;
+                }
+            });
+        } catch (RedisSystemException e) {
+            throw SSSTeamException.of(REDIS_WRONG_TYPE_DATASTRUCTURE_EXCEPTION);
+        } catch (DataAccessException e) {
             throw SSSTeamException.of(REDIS_CONNECTION_FAILURE_EXCEPTION);
         }
     }
