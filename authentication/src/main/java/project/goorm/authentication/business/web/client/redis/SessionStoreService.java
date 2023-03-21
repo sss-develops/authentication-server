@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.concurrent.TimeUnit.MINUTES;
 import static project.goorm.authentication.business.core.domain.common.error.CommonTypeException.REDIS_CONNECTION_FAILURE_EXCEPTION;
 import static project.goorm.authentication.business.core.domain.common.error.CommonTypeException.REDIS_WRONG_TYPE_DATASTRUCTURE_EXCEPTION;
 
@@ -51,7 +52,8 @@ public class SessionStoreService implements RedisSessionService {
                     operations.multi();
 
                     redisTemplate.opsForSet().add(getSessionsKey(memberId), session);
-                    stringRedisTemplate.opsForValue().set(session, String.valueOf(memberId));
+                    redisTemplate.expire(getSessionsKey(memberId), 20, MINUTES);
+                    stringRedisTemplate.opsForValue().set(session, String.valueOf(memberId), Duration.ofMinutes(20));
 
                     @SuppressWarnings("unchecked")
                     List<Object> transactionCommit = operations.exec();
@@ -83,11 +85,7 @@ public class SessionStoreService implements RedisSessionService {
     public Long getLoginTryCount(Long memberId) {
         try {
             Long loginTryCount = loginCountRedisTemplate.opsForValue().increment(getLoginCountKey(memberId));
-            if (loginTryCount == null) {
-                loginCountRedisTemplate.opsForValue().set(getLoginCountKey(memberId), 1L, Duration.ofMinutes(30));
-                return 1L;
-            }
-            loginCountRedisTemplate.opsForValue().set(getLoginCountKey(memberId), loginTryCount, Duration.ofMinutes(30));
+            loginCountRedisTemplate.expire(getLoginCountKey(memberId), Duration.ofMinutes(30));
             return loginTryCount;
         } catch (DataAccessException e) {
             throw SSSTeamException.of(REDIS_CONNECTION_FAILURE_EXCEPTION);
