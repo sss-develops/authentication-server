@@ -45,12 +45,12 @@ public class Member {
     private LastLoginIpAddress lastLoginIpAddress;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "ENUM('NORMAL', 'ADMIN')")
+    private Role role;
+
+    @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "ENUM('TRUE', 'FALSE')")
     private Deleted deleted;
-
-    public Long getMemberId() {
-        return memberId;
-    }
 
     /**
      * @Nullary-Constructor. JPA 기본 생성자로 member 외부 패키지에서 호출하지 말 것.
@@ -69,7 +69,12 @@ public class Member {
         this.lastLoginIpAddress = new LastLoginIpAddress("");
         this.createdAt = CreatedAt.initCreatedAt();
         this.lastModifiedAt = LastModifiedAt.initLastModifiedAt();
+        this.role = Role.NORMAL;
         this.deleted = Deleted.FALSE;
+    }
+
+    public Long getMemberId() {
+        return memberId;
     }
 
     public LoginId getLoginIdAsValue() {
@@ -118,6 +123,10 @@ public class Member {
 
     public String getLastLoginIpAddress() {
         return lastLoginIpAddress.getLastLoginIpAddress();
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     public Deleted getDeleted() {
