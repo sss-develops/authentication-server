@@ -36,6 +36,7 @@ public class ExistsIntegrationTest extends IntegrationTestBase {
 
     // JUnit test for
     @Test
+    @DisplayName("존재하지 않는 회원을 조회하면 false를 반환한다.")
     public void when_find_by_member_id_then_return_false() {
         // when - action or the behaviour that we are going test
         Boolean exists = memberExistsService.memberExistsByMemberId(5L);
