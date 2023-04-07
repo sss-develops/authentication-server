@@ -1,6 +1,7 @@
 package project.goorm.authentication.test.integrationtest;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import project.goorm.authentication.common.configuration.annotation.IntegrationTest;
 import project.goorm.authentication.common.configuration.nosql.MongoInitialization;
@@ -19,7 +20,8 @@ public class IntegrationTestBase {
     @Autowired
     private RedisInitialization redisInitialization;
 
-    @AfterEach
+//    @AfterEach
+    @BeforeEach
     void setUP() {
         RDBInitialization.truncateAllEntity();
         mongoInitialization.clearCollections();

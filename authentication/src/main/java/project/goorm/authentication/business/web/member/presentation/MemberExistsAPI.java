@@ -1,10 +1,7 @@
 package project.goorm.authentication.business.web.member.presentation;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import project.goorm.authentication.business.web.member.application.service.MemberExistsService;
 
 @RestController
@@ -18,7 +15,7 @@ public class MemberExistsAPI {
     }
 
     @GetMapping("/{memberId}")
-    public ResponseEntity<Boolean> memberExistsByMemberId(@RequestParam("memberId") Long memberId) {
+    public ResponseEntity<Boolean> memberExistsByMemberId(@PathVariable(value = "memberId") Long memberId) {
         Boolean exists = memberExistsService.memberExistsByMemberId(memberId);
         return ResponseEntity.ok().body(exists);
     }
