@@ -1,6 +1,7 @@
 pipeline {
-  agent any
-  
+  agent {
+    label 'agent'
+  }
   parameters {
     string name: 'IMAGE_NAME', defaultValue: 'authentication'
     string name: 'IMAGE_REGISTRY_ACCOUNT', defaultValue: 'hahajong'
