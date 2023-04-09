@@ -1,6 +1,7 @@
 pipeline {
-  agent any
-  
+  agent {
+    label 'agent'
+  }
   parameters {
     string name: 'IMAGE_NAME', defaultValue: 'authentication'
     string name: 'IMAGE_REGISTRY_ACCOUNT', defaultValue: 'hahajong'
@@ -17,7 +18,7 @@ pipeline {
       steps {
         sh "cp -rf ${params.IMAGE_NAME}/* ."
         sh "mkdir -p ${env.WORKSPACE}/src/test/resources/"
-        sh "cp /var/lib/jenkins/test-config/${params.IMAGE_NAME}/application-test.yml ${env.WORKSPACE}/src/test/resources/"
+        sh "cp /home/ubuntu/test-config/${params.IMAGE_NAME}/application-test.yml ${env.WORKSPACE}/src/test/resources/"
       }
     }
 
