@@ -1,5 +1,6 @@
 package project.goorm.authentication.common.response;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
@@ -41,5 +42,29 @@ public final class ApiResponse<T> {
 
     public static <T> ApiResponse<T> ok() {
         return new ApiResponse<>(null);
+    }
+
+    public LocalDateTime getEventTime() {
+        return eventTime;
+    }
+
+    public HttpStatus getStatus() {
+        return status;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public CommonInformationResponse getCommonInformation() {
+        return commonInformation;
+    }
+
+    public T getData() {
+        return data;
     }
 }
