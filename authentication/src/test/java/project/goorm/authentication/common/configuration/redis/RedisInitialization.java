@@ -7,22 +7,21 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 @Component
 public class RedisInitialization {
 
     @Autowired
-    @Resource(name = "sessionsRedisTemplate")
+    @Resource(name = "sessionsRedisTemplateTest")
     private RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
-    @Resource(name = "sessionRedisTemplate")
+    @Resource(name = "sessionRedisTemplateTest")
     private StringRedisTemplate stringRedisTemplate;
 
     @Autowired
-    @Resource(name = "loginCountRedisTemplate")
+    @Resource(name = "loginCountRedisTemplateTest")
     private RedisTemplate<String, Long> longRedisTemplate;
 
     public RedisTemplate<String, Object> getRedisTemplate() {
