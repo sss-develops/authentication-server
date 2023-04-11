@@ -23,13 +23,10 @@ import static project.goorm.authentication.business.core.domain.common.error.Com
 @Service
 public class SessionStoreService implements RedisSessionService {
 
-    @Resource(name = "sessionsRedisTemplate")
     private final RedisTemplate<String, Object> redisTemplate;
 
-    @Resource(name = "sessionRedisTemplate")
     private final StringRedisTemplate stringRedisTemplate;
 
-    @Resource(name = "loginCountRedisTemplate")
     private final RedisTemplate<String, Long> loginCountRedisTemplate;
 
     public SessionStoreService(
