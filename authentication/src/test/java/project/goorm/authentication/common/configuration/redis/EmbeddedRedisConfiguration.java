@@ -1,7 +1,17 @@
 package project.goorm.authentication.common.configuration.redis;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.util.StringUtils;
 import redis.embedded.RedisServer;
@@ -18,7 +28,53 @@ public class EmbeddedRedisConfiguration {
 
     @Value("${spring.redis.port}")
     private int port;
+
+    @Value("${spring.redis.host}")
+    private String host;
+
     private RedisServer redisServer;
+
+    @Primary
+    @Bean("redisConnectionFactoryTest")
+    public RedisConnectionFactory redisConnectionFactoryTest() {
+        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
+        redisStandaloneConfiguration.setHostName(host);
+        redisStandaloneConfiguration.setPort(port);
+        return new LettuceConnectionFactory(redisStandaloneConfiguration);
+    }
+
+    @Primary
+    @Bean(name = "sessionsRedisTemplateTest")
+    public RedisTemplate<String, Object> objectRedisTemplateTest() {
+        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
+        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setConnectionFactory(redisConnectionFactoryTest());
+        return redisTemplate;
+    }
+
+    @Primary
+    @Bean(name = "sessionRedisTemplateTest")
+    public StringRedisTemplate stringRedisTemplateTest(){
+        StringRedisTemplate stringRedisTemplate=new StringRedisTemplate();
+        stringRedisTemplate.setConnectionFactory(redisConnectionFactoryTest());
+        stringRedisTemplate.setKeySerializer(new StringRedisSerializer());
+        stringRedisTemplate.setValueSerializer(new StringRedisSerializer());
+        return stringRedisTemplate;
+    }
+
+    @Primary
+    @Bean(name = "loginCountRedisTemplateTest")
+    public RedisTemplate<String, Long> loginCountRedisTemplateTest() {
+        RedisTemplate<String, Long> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
+        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setConnectionFactory(redisConnectionFactoryTest());
+        return redisTemplate;
+    }
+
 
     @PostConstruct
     public void redisServer() throws IOException {
